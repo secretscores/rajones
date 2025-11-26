@@ -23,15 +23,16 @@
 
     <script type="text/javascript">
         // Datos de los equipos
+        // *** Las rutas de las caras de los equipos han sido actualizadas para usar archivos locales (.png) ***
         const TEAM_DATA = [
-            { id: 'toluca', name: 'Toluca', face: 'https://randomuser.me/api/portraits/men/32.jpg', color: 'from-red-600 to-red-800' },
-            { id: 'tigres', name: 'Tigres', face: 'https://randomuser.me/api/portraits/men/86.jpg', color: 'from-yellow-500 to-blue-700' },
-            { id: 'cruzazul', name: 'Cruz Azul', face: 'https://randomuser.me/api/portraits/men/11.jpg', color: 'from-blue-600 to-blue-800' },
-            { id: 'america', name: 'América', face: 'https://randomuser.me/api/portraits/women/68.jpg', color: 'from-yellow-300 to-blue-900' },
-            { id: 'monterrey', name: 'Monterrey', face: 'https://randomuser.me/api/portraits/men/62.jpg', color: 'from-blue-800 to-white' },
-            { id: 'chivas', name: 'Chivas', face: 'https://randomuser.me/api/portraits/women/44.jpg', color: 'from-red-600 to-white' },
-            { id: 'xolos', name: 'Xolos', face: 'https://randomuser.me/api/portraits/men/54.jpg', color: 'from-red-700 to-black' },
-            { id: 'juarez', name: 'Juárez', face: 'https://randomuser.me/api/portraits/men/22.jpg', color: 'from-green-600 to-black' },
+            { id: 'toluca', name: 'Toluca', face: 'toluca.png', color: 'from-red-600 to-red-800' },
+            { id: 'tigres', name: 'Tigres', face: 'tigres.png', color: 'from-yellow-500 to-blue-700' },
+            { id: 'cruzazul', name: 'Cruz Azul', face: 'cruzazul.png', color: 'from-blue-600 to-blue-800' },
+            { id: 'america', name: 'América', face: 'america.png', color: 'from-yellow-300 to-blue-900' },
+            { id: 'monterrey', name: 'Monterrey', face: 'monterrey.png', color: 'from-blue-800 to-white' },
+            { id: 'chivas', name: 'Chivas', face: 'chivas.png', color: 'from-red-600 to-white' },
+            { id: 'xolos', name: 'Xolos', face: 'xolos.png', color: 'from-red-700 to-black' },
+            { id: 'juarez', name: 'Juárez', face: 'juarez.png', color: 'from-green-600 to-black' },
         ];
 
         // Definición de los enfrentamientos (Cuartos de Final)
@@ -159,8 +160,8 @@
             bracketHTML += `
                 <div class="flex flex-col justify-center w-64 pl-8">
                     <div class="opacity-80 text-center transition-opacity duration-300 hover:opacity-100">
-                        <!-- Imagen de Trofeo Dorado Real, reemplazando el SVG -->
-                        <img src="https://images.unsplash.com/photo-1628109849187-5435987a030d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc2MTZ8MHwxfGFsbHwxfHxnb2xkZW4lMjB0cm9waHl8ZW58MHx8fHwxNjczOTMxMjgw&ixlib=rb-4.0.3&q=80&w=400" 
+                        <!-- Imagen de Trofeo ahora apunta al archivo local "trofeo.png" -->
+                        <img src="trofeo.png" 
                              alt="Trofeo de Fútbol Dorado" 
                              class="w-24 h-24 mx-auto mb-4 object-contain shadow-lg"
                              onerror="this.onerror=null;this.src='https://placehold.co/96x96/FFD700/000000?text=🏆'">
