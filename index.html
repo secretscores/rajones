@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torneo de Rajones - Diagrama de Llaves</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Configuración de la fuente Inter (aunque Tailwind la usa por defecto) y estilos base */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Se han quitado todos los estilos de .connector-* que dibujaban las líneas */
+    </style>
+</head>
+<body class="min-h-screen bg-slate-900 text-white font-sans selection:bg-blue-500 selection:text-white">
+
+    <div id="app" class="p-4 sm:p-8">
+        <!-- Contenido será inyectado aquí -->
+    </div>
+
+    <script type="text/javascript">
+        // Datos de los equipos
+        const TEAM_DATA = [
+            { id: 'toluca', name: 'Toluca', face: 'https://randomuser.me/api/portraits/men/32.jpg', color: 'from-red-600 to-red-800' },
+            { id: 'tigres', name: 'Tigres', face: 'https://randomuser.me/api/portraits/men/86.jpg', color: 'from-yellow-500 to-blue-700' },
+            { id: 'cruzazul', name: 'Cruz Azul', face: 'https://randomuser.me/api/portraits/men/11.jpg', color: 'from-blue-600 to-blue-800' },
+            { id: 'america', name: 'América', face: 'https://randomuser.me/api/portraits/women/68.jpg', color: 'from-yellow-300 to-blue-900' },
+            { id: 'monterrey', name: 'Monterrey', face: 'https://randomuser.me/api/portraits/men/62.jpg', color: 'from-blue-800 to-white' },
+            { id: 'chivas', name: 'Chivas', face: 'https://randomuser.me/api/portraits/women/44.jpg', color: 'from-red-600 to-white' },
+            { id: 'xolos', name: 'Xolos', face: 'https://randomuser.me/api/portraits/men/54.jpg', color: 'from-red-700 to-black' },
+            { id: 'juarez', name: 'Juárez', face: 'https://randomuser.me/api/portraits/men/22.jpg', color: 'from-green-600 to-black' },
+        ];
+
+        // Definición de los enfrentamientos (Cuartos de Final)
+        const INITIAL_MATCHES = [
+            { id: 1, team1: TEAM_DATA[0], team2: TEAM_DATA[7], winner: null, nextMatchId: 5, slot: 'team1' }, // Toluca vs Juárez
+            { id: 2, team1: TEAM_DATA[4], team2: TEAM_DATA[3], winner: null, nextMatchId: 5, slot: 'team2' }, // Monterrey vs América
+            { id: 3, team1: TEAM_DATA[6], team2: TEAM_DATA[1], winner: null, nextMatchId: 6, slot: 'team1' }, // Xolos vs Tigres
+            { id: 4, team1: TEAM_DATA[5], team2: TEAM_DATA[2], winner: null, nextMatchId: 6, slot: 'team2' }, // Chivas vs Cruz Azul
+        ];
+
+        // Definición de las Semifinales (Vacías)
+        const SEMI_FINALS = [
+            { id: 5, team1: null, team2: null, winner: null, nextMatchId: 7, slot: 'team1' },
+            { id: 6, team1: null, team2: null, winner: null, nextMatchId: 7, slot: 'team2' },
+        ];
+
+        // Definición de la Final (Vacía)
+        const FINAL = [
+            { id: 7, team1: null, team2: null, winner: null, nextMatchId: null, slot: 'winner' },
+        ];
+
+        // Función para generar la tarjeta de un equipo
+        function createTeamCard(team, isPlaceholder = false) {
+            if (!team && isPlaceholder) {
+                return `
+                    <div class="h-16 w-36 bg-gray-800/50 rounded-lg border border-dashed border-gray-600 flex items-center justify-center">
+                        <span class="text-gray-500 text-xs">Esperando...</span>
+                    </div>
+                `;
+            }
+
+            if (!team) return '';
+
+            return `
+                <div class="relative flex items-center gap-3 p-2 w-44 rounded-xl transition-all duration-300 border-2 border-gray-700 bg-gray-800 cursor-default">
+                    <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-md flex-shrink-0 bg-gradient-to-br ${team.color}">
+                        <img src="${team.face}" alt="${team.name}" class="w-full h-full object-cover" />
+                    </div>
+                    <div class="text-left flex items-center h-12">
+                        <p class="font-bold text-white text-sm leading-tight">${team.name}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Función principal para renderizar el bracket
+        function renderBracket() {
+            const appDiv = document.getElementById('app');
+
+            const header = `
+                <header class="max-w-6xl mx-auto mb-12 flex justify-between items-center border-b border-gray-700 pb-6">
+                    <div>
+                        <h1 class="text-3xl sm:text-4xl font-black tracking-tighter bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent uppercase italic">
+                            Torneo de Rajones
+                        </h1>
+                        <p class="text-gray-400 mt-2">Diagrama de Llaves Oficial</p>
+                    </div>
+                </header>
+            `;
+
+            let bracketHTML = `
+                <div class="overflow-x-auto pb-12">
+                    <!-- Se ha mantenido el gap-16 para separar las columnas -->
+                    <div class="min-w-[900px] flex justify-center gap-16 mx-auto">
+            `;
+
+            // --- Columna 1: Cuartos de Final (Round 1) ---
+            bracketHTML += `
+                <div class="flex flex-col justify-around gap-8">
+                    <h3 class="text-center text-blue-400 font-bold uppercase tracking-widest text-xs mb-4">Cuartos de Final</h3>
+            `;
+            INITIAL_MATCHES.forEach((match, idx) => {
+                bracketHTML += `
+                    <div class="relative flex items-center group match-group">
+                        <div class="flex flex-col gap-4 bg-slate-800/30 p-3 rounded-2xl border border-white/5">
+                            ${createTeamCard(match.team1)}
+                            ${createTeamCard(match.team2)}
+                        </div>
+                        <!-- Conectores eliminados -->
+                    </div>
+                `;
+            });
+            bracketHTML += `</div>`; // Cierra Round 1
+
+            // --- Columna 2: Semifinales (Round 2) ---
+            bracketHTML += `
+                <div class="flex flex-col justify-around gap-24 mt-8">
+                    <h3 class="text-center text-purple-400 font-bold uppercase tracking-widest text-xs mb-4">Semifinales</h3>
+            `;
+            SEMI_FINALS.forEach((match, idx) => {
+                bracketHTML += `
+                    <div class="relative flex items-center group semi-group">
+                        
+                        <div class="flex flex-col gap-4 bg-slate-800/50 p-3 rounded-2xl border border-white/10 shadow-xl">
+                            ${createTeamCard(match.team1, true)}
+                            <div class="h-px bg-gray-700 w-full mx-auto"></div>
+                            ${createTeamCard(match.team2, true)}
+                        </div>
+                        <!-- Conectores eliminados -->
+                    </div>
+                `;
+            });
+            bracketHTML += `</div>`; // Cierra Round 2
+
+            // --- Columna 3: Gran Final (Round 3) ---
+            bracketHTML += `
+                <div class="flex flex-col justify-center gap-12 mt-4">
+                    <h3 class="text-center text-yellow-400 font-bold uppercase tracking-widest text-xs mb-4">Gran Final</h3>
+                    ${FINAL.map(match => `
+                        <div class="relative flex items-center">
+                            
+                            <div class="flex flex-col gap-6 bg-gradient-to-b from-slate-800 to-slate-900 p-6 rounded-3xl border border-yellow-500/30 shadow-[0_0_30px_rgba(234,179,8,0.1)]">
+                                ${createTeamCard(match.team1, true)}
+                                <div class="flex items-center gap-2 justify-center">
+                                    <span class="text-yellow-500 font-black italic text-xl">VS</span>
+                                </div>
+                                ${createTeamCard(match.team2, true)}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            // --- Columna 4: Campeón ---
+            bracketHTML += `
+                <div class="flex flex-col justify-center w-64 pl-8">
+                    <div class="opacity-80 text-center transition-opacity duration-300 hover:opacity-100">
+                        <!-- Imagen de Trofeo Dorado Real, reemplazando el SVG -->
+                        <img src="https://images.unsplash.com/photo-1628109849187-5435987a030d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc2MTZ8MHwxfGFsbHwxfHxnb2xkZW4lMjB0cm9waHl8ZW58MHx8fHwxNjczOTMxMjgw&ixlib=rb-4.0.3&q=80&w=400" 
+                             alt="Trofeo de Fútbol Dorado" 
+                             class="w-24 h-24 mx-auto mb-4 object-contain shadow-lg"
+                             onerror="this.onerror=null;this.src='https://placehold.co/96x96/FFD700/000000?text=🏆'">
+                        <p class="uppercase font-bold tracking-widest">Esperando<br/>Ganador</p>
+                    </div>
+                </div>
+            `;
+            
+            bracketHTML += `</div></div>`; // Cierra Bracket Container
+
+            appDiv.innerHTML = header + bracketHTML;
+        }
+
+        // Ejecutar la función para dibujar el bracket al cargar la página
+        window.onload = renderBracket;
+    </script>
+</body>
+</html>
